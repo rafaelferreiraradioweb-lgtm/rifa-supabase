@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rifa - Livros de Xadrez</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f4f4f9; color: #333; margin: 0; padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        header { text-align: center; border-bottom: 2px solid #eee; padding-bottom: 20px; }
+        h1 { color: #2c3e50; }
+        .status-rifa { text-align: center; font-size: 1.5rem; font-weight: 500; color: #2c3e50; margin: 25px 0 15px 0; }
+        .status-rifa span { font-weight: 700; color: #e74c3c; }
+        
+        /* Painel da Rifa */
+        .painel-rifa {
+            display: grid;
+            /* ATENÇÃO: 20 colunas para caber os 400 números */
+            grid-template-columns: repeat(20, 1fr); 
+            gap: 6px;
+            margin: 30px 0;
+        }
+        .numero {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.7rem; /* Diminuí a fonte para caber */
+            font-weight: bold;
+            aspect-ratio: 1 / 1;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
+        /* Nossos 3 status */
+        .numero.livre {
+            background: #e0f0ff;
+            color: #0056b3;
+        }
+        .numero.livre:hover {
+            background: #0056b3;
+            color: white;
+        }
+        .numero.pendente {
+            background: #fff3cd;
+            color: #856404;
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+        .numero.vendido {
+            background: #e74c3c;
+            color: #fff;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        /* Loading */
+        #loading { font-size: 1.2rem; text-align: center; padding: 40px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <header>
+            <h1>Rifa: 10 Livros de Xadrez (400 Números)</h1>
+            <p>Clique em um número azul para reservar!</p>
+            <div class="status-rifa" id="status-rifa">Carregando...</div>
+        </header>
+
+        <div class="painel-rifa" id="painel-rifa">
+            <div id="loading">Carregando números...</div>
+        </div>
+
+        <div class="regulamento">
+            <h2>Regulamento</h2>
+            <p><strong>Valor:</strong> R$ X,XX por número.</p>
+            <p><strong>Pagamento:</strong> Chave Pix (seu_email@pix.com) ou (99) 99999-9999. Reservas são feitas pelo WhatsApp após clicar no número.</p>
+            <p><strong>Sorteio:</strong> O sorteio será realizado no dia XX/XX/XXXX.</p>
+        </div>
+    </div>
+
+    <script>
+        // ###############################################################
+        //           PASSO 3: COLE SUAS CHAVES AQUI
+        // ###############################################################
+        
+        // Coloque seu número de WhatsApp com DDD (só números)
+        const SEU_TELEFONE_WHATSAPP = "5582000000000"; // Ex: 5511988887777 (com 55 do Brasil)
+
+        // Cole a URL e a Chave ANON que você salvou do Supabase
+        const SUPABASE_URL = "https://[SUA_URL].supabase.co"; 
+        const SUPABASE_KEY = "[SUA_CHAVE_ANON_PUBLIC]";
+
+        // ###############################################################
+        //           DAQUI PARA BAIXO O CÓDIGO FUNCIONA SOZINHO
+        // ###############################################################
+
+        const painel = document.getElementById('painel-rifa');
+        const statusRifa = document.getElementById('status-rifa');
+        const loading = document.getElementById('loading');
+        
+        // 1. Conecta ao Supabase
+        const { createClient } = supabase;
+        const _supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // 2. Função para buscar os números
+        async function buscarNumeros() {
+            try {
+                // Busca da tabela 'rifa_numeros', todas as colunas, ordenado por numero_rifa
+                const { data, error } = await _supabase
+                    .from('rifa_numeros')
+                    .select('*')
+                    .order('numero_rifa', { ascending: true });
+
+                if (error) throw error;
+
+                // Limpa o "carregando"
+                painel.innerHTML = "";
+                let vendidos = 0;
+
+                // 3. Desenha o painel
+                data.forEach(numero => {
+                    const numeroDiv = document.createElement('div');
+                    numeroDiv.classList.add('numero');
+                    numeroDiv.textContent = numero.numero_rifa;
+                    
+                    // Adiciona a classe de status (livre, pendente, vendido)
+                    numeroDiv.classList.add(numero.status); 
+                    
+                    if (numero.status === 'vendido' || numero.status === 'pendente') {
+                        numeroDiv.title = `Comprado por: ${numero.nome_comprador || 'Reservado'}`;
+                        if (numero.status === 'vendido') {
+                            vendidos++;
+                        }
+                    } else {
+                        // É 'livre', adiciona o clique
+                        numeroDiv.title = "Clique para reservar este número!";
+                        numeroDiv.addEventListener('click', () => reservarNumero(numero.numero_rifa));
+                    }
+                    
+                    painel.appendChild(numeroDiv);
+                });
+                
+                // Atualiza o status (Lembre-se que você criou 400!)
+                statusRifa.innerHTML = `Status: <span>${vendidos} / 400</span> vendidos`;
+
+            } catch (error) {
+                console.error("Erro ao buscar dados:", error.message);
+                painel.innerHTML = `<p style="color:red;">Erro ao carregar a rifa. Verifique o console.</p>`;
+            }
+        }
+
+        // 4. Função para reservar (abrir WhatsApp)
+        function reservarNumero(numero) {
+            const nome = prompt("Qual seu nome para reserva?");
+            if (nome) {
+                const mensagem = `Olá! Quero reservar o número ${numero} da rifa de xadrez. Meu nome é ${nome}.`;
+                const linkWhatsapp = `https://wa.me/${SEU_TELEFONE_WHATSAPP}?text=${encodeURIComponent(mensagem)}`;
+                
+                // Abre o WhatsApp em uma nova aba
+                window.open(linkWhatsapp, '_blank');
+                
+                // Opcional: Marcar como "pendente" visualmente (mas o admin que confirma)
+                alert("Você será redirecionado ao WhatsApp para confirmar sua reserva! Seu número só será garantido após a confirmação do PIX.");
+            }
+        }
+
+        // Inicia tudo
+        buscarNumeros();
+    </script>
+
+</body>
+</html>
