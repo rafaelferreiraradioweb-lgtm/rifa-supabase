@@ -6,6 +6,7 @@
     <title>Rifa - Livros de Xadrez</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
+        /* ESTA É A PARTE QUE FAZ OS NÚMEROS FICAREM AZUIS */
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f4f4f9; color: #333; margin: 0; padding: 20px; }
         .container { max-width: 900px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         header { text-align: center; border-bottom: 2px solid #eee; padding-bottom: 20px; }
@@ -35,7 +36,7 @@
         
         /* Nossos 3 status */
         .numero.livre {
-            background: #e0f0ff;
+            background: #e0f0ff; /* <-- A COR AZUL */
             color: #0056b3;
         }
         .numero.livre:hover {
@@ -75,25 +76,27 @@
 
         <div class="regulamento">
             <h2>Regulamento</h2>
-            <p><strong>Valor:</strong> R$ X,XX por número.</p>
-            <p><strong>Pagamento:</strong> Chave Pix (seu_email@pix.com) ou (99) 99999-9999. Reservas são feitas pelo WhatsApp após clicar no número.</p>
-            <p><strong>Sorteio:</strong> O sorteio será realizado no dia XX/XX/XXXX.</p>
+            
+            <p><strong>Valor:</strong> R$ 10,00 por número.</p>
+            <p><strong>Pagamento:</strong> Chave Pix (rafaelferreiraradioweb@gmail.com). Reservas são feitas pelo WhatsApp após clicar no número.</p>
+            <p><strong>Sorteio:</strong> O sorteio será realizado no dia 05/01/2026.</p>
+            
         </div>
     </div>
 
     <script>
         // ###############################################################
-        //           PASSO 3: COLE SUAS CHAVES AQUI
+        //           PASSO FINAL: COLE SUAS CHAVES AQUI
         // ###############################################################
         
-        // 1. Coloque seu número de WhatsApp com DDD (só números)
-        const SEU_TELEFONE_WHATSAPP = "5582996535079"; // Ex: 5511988887777 (com 55 do Brasil)
+        // 1. Seu WhatsApp (JÁ ESTÁ PREENCHIDO)
+        const SEU_TELEFONE_WHATSAPP = "5582996535079";
 
         // 2. Cole a URL que você salvou do Supabase
-        const SUPABASE_URL = "https://oqctondabteyhkqogxtn.supabase.co"; // Ex: "https://seunome.supabase.co"
+        const SUPABASE_URL = "COLOQUE_SUA_URL_SUPABASE_AQUI"; // Ex: "https://seunome.supabase.co"
 
         // 3. Cole a Chave ANON que você salvou do Supabase
-        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xY3RvbmRhYnRleWhrcW9neHRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5Njc1MDEsImV4cCI6MjA3ODU0MzUwMX0.s3M828sPolvVSEdnANtGnHkfapn7jzOkvh7gMsIN74k";
+        const SUPABASE_KEY = "COLOQUE_SUA_CHAVE_ANON_AQUI";
 
 
         // ###############################################################
@@ -107,7 +110,7 @@
         
         // Validação inicial
         if (SUPABASE_URL === "COLOQUE_SUA_URL_SUPABASE_AQUI" || SUPABASE_KEY === "COLOQUE_SUA_CHAVE_ANON_AQUI") {
-            alert("ERRO: Você esqueceu de configurar as chaves SUPABASE_URL e SUPABASE_KEY no arquivo index.html!");
+            alert("ERRO: Quase pronto! Você precisa editar o index.html e colar as chaves SUPABASE_URL e SUPABASE_KEY que você salvou.");
         }
 
         // 1. Conecta ao Supabase
