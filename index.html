@@ -17,7 +17,6 @@
         /* Painel da Rifa */
         .painel-rifa {
             display: grid;
-            /* 20 colunas para caber os 400 números (20x20=400) */
             grid-template-columns: repeat(20, 1fr); 
             gap: 6px;
             margin: 30px 0;
@@ -26,7 +25,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 0.7rem; /* Fonte pequena para caber */
+            font-size: 0.7rem; 
             font-weight: bold;
             aspect-ratio: 1 / 1;
             border-radius: 4px;
@@ -35,35 +34,15 @@
         }
         
         /* Nossos 3 status */
-        .numero.livre {
-            background: #e0f0ff; /* <-- A COR AZUL */
-            color: #0056b3;
-        }
-        .numero.livre:hover {
-            background: #0056b3;
-            color: white;
-        }
-        .numero.pendente {
-            background: #fff3cd;
-            color: #856404;
-            cursor: not-allowed;
-            opacity: 0.8;
-        }
-        .numero.vendido {
-            background: #e74c3c;
-            color: #fff;
-            cursor: not-allowed;
-            opacity: 0.7;
-        }
-
-        /* Loading */
+        .numero.livre { background: #e0f0ff; color: #0056b3; }
+        .numero.livre:hover { background: #0056b3; color: white; }
+        .numero.pendente { background: #fff3cd; color: #856404; cursor: not-allowed; opacity: 0.8; }
+        .numero.vendido { background: #e74c3c; color: #fff; cursor: not-allowed; opacity: 0.7; }
         #loading { font-size: 1.2rem; text-align: center; padding: 40px; }
     </style>
 </head>
 <body>
-
     <div class="container">
-        
         <header>
             <h1>Rifa: 10 Livros de Xadrez (400 Números)</h1>
             <p>Clique em um número azul para reservar!</p>
@@ -76,11 +55,9 @@
 
         <div class="regulamento">
             <h2>Regulamento</h2>
-            
             <p><strong>Valor:</strong> R$ 10,00 por número.</p>
             <p><strong>Pagamento:</strong> Chave Pix (rafaelferreiraradioweb@gmail.com). Reservas são feitas pelo WhatsApp após clicar no número.</p>
             <p><strong>Sorteio:</strong> O sorteio será realizado no dia 05/01/2026.</p>
-            
         </div>
     </div>
 
@@ -89,76 +66,52 @@
         //           PASSO FINAL: COLE SUAS CHAVES AQUI
         // ###############################################################
         
-        // 1. Seu WhatsApp (JÁ ESTÁ PREENCHIDO)
         const SEU_TELEFONE_WHATSAPP = "5582996535079";
 
-        // 2. Cole a URL que você salvou do Supabase
-        const SUPABASE_URL = "https://oqctondabteyhkqogxtn.supabase.co"; // Ex: "https://seunome.supabase.co"
-
-        // 3. Cole a Chave ANON que você salvou do Supabase
+        // COLE A URL E A CHAVE ANON QUE VOCÊ SALVOU
+        const SUPABASE_URL = "https://oqctondabteyhkqogxtn.supabase.co"; 
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xY3RvbmRhYnRleWhrcW9neHRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5Njc1MDEsImV4cCI6MjA3ODU0MzUwMX0.s3M828sPolvVSEdnANtGnHkfapn7jzOkvh7gMsIN74k";
-
 
         // ###############################################################
         //           DAQUI PARA BAIXO O CÓDIGO FUNCIONA SOZINHO
-        //           NÃO PRECISA MAIS EDITAR NADA
         // ###############################################################
-
         const painel = document.getElementById('painel-rifa');
         const statusRifa = document.getElementById('status-rifa');
-        const loading = document.getElementById('loading');
         
-        // Validação inicial
         if (SUPABASE_URL === "COLOQUE_SUA_URL_SUPABASE_AQUI" || SUPABASE_KEY === "COLOQUE_SUA_CHAVE_ANON_AQUI") {
-            alert("ERRO: Quase pronto! Você precisa editar o index.html e colar as chaves SUPABASE_URL e SUPABASE_KEY que você salvou.");
+            painel.innerHTML = `<p style="color:red; text-align:center;"><b>ERRO: Quase pronto!</b><br>Você precisa editar o index.html e colar as chaves SUPABASE_URL e SUPABASE_KEY que você salvou.</p>`;
         }
 
-        // 1. Conecta ao Supabase
         const { createClient } = supabase;
         const _supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // 2. Função para buscar os números
         async function buscarNumeros() {
             try {
-                // Busca da tabela 'rifa_numeros', todas as colunas, ordenado por numero_rifa
-                const { data, error } = await _supabase
-                    .from('rifa_numeros')
-                    .select('*')
-                    .order('numero_rifa', { ascending: true });
-
+                const { data, error } = await _supabase.from('rifa_numeros').select('*').order('numero_rifa', { ascending: true });
                 if (error) throw error;
 
-                // Limpa o "carregando"
                 painel.innerHTML = "";
                 let vendidos = 0;
-                let totalNumeros = data.length; // Conta o total de números (deve ser 400)
+                let totalNumeros = data.length; 
 
-                // 3. Desenha o painel
                 data.forEach(numero => {
                     const numeroDiv = document.createElement('div');
                     numeroDiv.classList.add('numero');
                     numeroDiv.textContent = numero.numero_rifa;
-                    
-                    // Adiciona a classe de status (livre, pendente, vendido)
                     let statusLimpo = numero.status ? numero.status.trim().toLowerCase() : 'livre';
                     numeroDiv.classList.add(statusLimpo); 
                     
                     if (statusLimpo === 'vendido' || statusLimpo === 'pendente') {
                         numeroDiv.title = `Comprado por: ${numero.nome_comprador || 'Reservado'}`;
-                        if (statusLimpo === 'vendido') {
-                            vendidos++;
-                        }
+                        if (statusLimpo === 'vendido') { vendidos++; }
                     } else {
-                        // É 'livre', adiciona o clique
                         numeroDiv.title = "Clique para reservar este número!";
                         numeroDiv.addEventListener('click', () => reservarNumero(numero.numero_rifa));
                     }
-                    
                     painel.appendChild(numeroDiv);
                 });
                 
-                // Atualiza o status
-                statusRifa.innerHTML = `Status: <span>${vendidos} / ${totalNumeros}</span> vendidos`;
+                document.getElementById('status-rifa').innerHTML = `Status: <span>${vendidos} / ${totalNumeros}</span> vendidos`;
 
             } catch (error) {
                 console.error("Erro ao buscar dados:", error.message);
@@ -166,23 +119,16 @@
             }
         }
 
-        // 4. Função para reservar (abrir WhatsApp)
         function reservarNumero(numero) {
             const nome = prompt("Qual seu nome para reserva?");
             if (nome) {
                 const mensagem = `Olá! Quero reservar o número ${numero} da rifa de xadrez. Meu nome é ${nome}.`;
                 const linkWhatsapp = `https://wa.me/${SEU_TELEFONE_WHATSAPP}?text=${encodeURIComponent(mensagem)}`;
-                
-                // Abre o WhatsApp em uma nova aba
                 window.open(linkWhatsapp, '_blank');
-                
                 alert("Você será redirecionado ao WhatsApp para confirmar sua reserva! Seu número só será garantido após a confirmação do PIX.");
             }
         }
-
-        // Inicia tudo
         buscarNumeros();
     </script>
-
 </body>
 </html>
