@@ -11,6 +11,17 @@
         .container { max-width: 900px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         header { text-align: center; border-bottom: 2px solid #eee; padding-bottom: 20px; }
         h1 { color: #2c3e50; }
+        
+        /* --- NOVO TEXTO DE JUSTIFICATIVA --- */
+        .justificativa {
+            font-size: 1.1rem;
+            color: #555;
+            line-height: 1.6;
+            margin-top: 15px;
+            margin-bottom: -10px; /* Ajusta espaço */
+        }
+        /* --- FIM NOVO TEXTO --- */
+
         .status-rifa { text-align: center; font-size: 1.5rem; font-weight: 500; color: #2c3e50; margin: 25px 0 15px 0; }
         .status-rifa span { font-weight: 700; color: #e74c3c; }
         
@@ -33,7 +44,6 @@
             cursor: pointer;
         }
         
-        /* Nossos 3 status */
         .numero.livre { background: #e0f0ff; color: #0056b3; }
         .numero.livre:hover { background: #0056b3; color: white; }
         .numero.pendente { background: #fff3cd; color: #856404; cursor: not-allowed; opacity: 0.8; }
@@ -44,7 +54,11 @@
 <body>
     <div class="container">
         <header>
-           <h1>Rifa: 10 Livros de Xadrez (400 Números)!</h1>
+            <h1>Rifa: 10 Livros de Xadrez (400 Números)</h1>
+            
+            <p class="justificativa">
+                Olá, pessoal! Esta rifa é para me ajudar a arrecadar fundos para viajar e competir em um importante torneio de xadrez. Conto com sua ajuda!
+            </p>
             <p>Clique em um número azul para reservar!</p>
             <div class="status-rifa" id="status-rifa">Carregando...</div>
         </header>
@@ -63,14 +77,14 @@
 
     <script>
         // ###############################################################
-        //           PASSO FINAL: COLE SUAS CHAVES AQUI
+        //           COLE SUAS CHAVES AQUI
         // ###############################################################
         
         const SEU_TELEFONE_WHATSAPP = "5582996535079";
 
         // COLE A URL E A CHAVE ANON QUE VOCÊ SALVOU
-        const SUPABASE_URL = "https://oqctondabteyhkqogxtn.supabase.co"; 
-        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xY3RvbmRhYnRleWhrcW9neHRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5Njc1MDEsImV4cCI6MjA3ODU0MzUwMX0.s3M828sPolvVSEdnANtGnHkfapn7jzOkvh7gMsIN74k";
+        const SUPABASE_URL = "https://oqctondabteyhkqogxtn.supabase.co"; // <-- JÁ ESTÁ COM A SUA URL
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xY3RvbmRhYnRleWhrcW9neHRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5Njc1MDEsImV4cCI6MjA3ODU0MzUwMX0.s3M828sPolvVSEdnANtGnHkfapn7jzOkvh7gMsIN74k"; // <-- JÁ ESTÁ COM A SUA CHAVE
 
         // ###############################################################
         //           DAQUI PARA BAIXO O CÓDIGO FUNCIONA SOZINHO
@@ -78,7 +92,7 @@
         const painel = document.getElementById('painel-rifa');
         const statusRifa = document.getElementById('status-rifa');
         
-        if (SUPABASE_URL === "COLOQUE_SUA_URL_SUPABASE_AQUI" || SUPABASE_KEY === "COLOQUE_SUA_CHAVE_ANON_AQUI") {
+        if (SUPABASE_URL === "https://oqctondabteyhkqogxtn.supabase.co" || SUPABASE_KEY === "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xY3RvbmRhYnRleWhrcW9neHRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5Njc1MDEsImV4cCI6MjA3ODU0MzUwMX0.s3M828sPolvVSEdnANtGnHkfapn7jzOkvh7gMsIN74k") {
             painel.innerHTML = `<p style="color:red; text-align:center;"><b>ERRO: Quase pronto!</b><br>Você precisa editar o index.html e colar as chaves SUPABASE_URL e SUPABASE_KEY que você salvou.</p>`;
         }
 
