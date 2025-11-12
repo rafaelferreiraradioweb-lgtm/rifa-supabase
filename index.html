@@ -16,7 +16,7 @@
         /* Painel da Rifa */
         .painel-rifa {
             display: grid;
-            /* ATENÇÃO: 20 colunas para caber os 400 números */
+            /* 20 colunas para caber os 400 números (20x20=400) */
             grid-template-columns: repeat(20, 1fr); 
             gap: 6px;
             margin: 30px 0;
@@ -25,7 +25,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 0.7rem; /* Diminuí a fonte para caber */
+            font-size: 0.7rem; /* Fonte pequena para caber */
             font-weight: bold;
             aspect-ratio: 1 / 1;
             border-radius: 4px;
@@ -86,21 +86,30 @@
         //           PASSO 3: COLE SUAS CHAVES AQUI
         // ###############################################################
         
-        // Coloque seu número de WhatsApp com DDD (só números)
-        const SEU_TELEFONE_WHATSAPP = "5582000000000"; // Ex: 5511988887777 (com 55 do Brasil)
+        // 1. Coloque seu número de WhatsApp com DDD (só números)
+        const SEU_TELEFONE_WHATSAPP = "5582996535079"; // Ex: 5511988887777 (com 55 do Brasil)
 
-        // Cole a URL e a Chave ANON que você salvou do Supabase
-        const SUPABASE_URL = "https://[SUA_URL].supabase.co"; 
-        const SUPABASE_KEY = "[SUA_CHAVE_ANON_PUBLIC]";
+        // 2. Cole a URL que você salvou do Supabase
+        const SUPABASE_URL = "https://oqctondabteyhkqogxtn.supabase.co"; // Ex: "https://seunome.supabase.co"
+
+        // 3. Cole a Chave ANON que você salvou do Supabase
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xY3RvbmRhYnRleWhrcW9neHRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5Njc1MDEsImV4cCI6MjA3ODU0MzUwMX0.s3M828sPolvVSEdnANtGnHkfapn7jzOkvh7gMsIN74k";
+
 
         // ###############################################################
         //           DAQUI PARA BAIXO O CÓDIGO FUNCIONA SOZINHO
+        //           NÃO PRECISA MAIS EDITAR NADA
         // ###############################################################
 
         const painel = document.getElementById('painel-rifa');
         const statusRifa = document.getElementById('status-rifa');
         const loading = document.getElementById('loading');
         
+        // Validação inicial
+        if (SUPABASE_URL === "COLOQUE_SUA_URL_SUPABASE_AQUI" || SUPABASE_KEY === "COLOQUE_SUA_CHAVE_ANON_AQUI") {
+            alert("ERRO: Você esqueceu de configurar as chaves SUPABASE_URL e SUPABASE_KEY no arquivo index.html!");
+        }
+
         // 1. Conecta ao Supabase
         const { createClient } = supabase;
         const _supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -119,6 +128,7 @@
                 // Limpa o "carregando"
                 painel.innerHTML = "";
                 let vendidos = 0;
+                let totalNumeros = data.length; // Conta o total de números (deve ser 400)
 
                 // 3. Desenha o painel
                 data.forEach(numero => {
@@ -127,11 +137,12 @@
                     numeroDiv.textContent = numero.numero_rifa;
                     
                     // Adiciona a classe de status (livre, pendente, vendido)
-                    numeroDiv.classList.add(numero.status); 
+                    let statusLimpo = numero.status ? numero.status.trim().toLowerCase() : 'livre';
+                    numeroDiv.classList.add(statusLimpo); 
                     
-                    if (numero.status === 'vendido' || numero.status === 'pendente') {
+                    if (statusLimpo === 'vendido' || statusLimpo === 'pendente') {
                         numeroDiv.title = `Comprado por: ${numero.nome_comprador || 'Reservado'}`;
-                        if (numero.status === 'vendido') {
+                        if (statusLimpo === 'vendido') {
                             vendidos++;
                         }
                     } else {
@@ -143,12 +154,12 @@
                     painel.appendChild(numeroDiv);
                 });
                 
-                // Atualiza o status (Lembre-se que você criou 400!)
-                statusRifa.innerHTML = `Status: <span>${vendidos} / 400</span> vendidos`;
+                // Atualiza o status
+                statusRifa.innerHTML = `Status: <span>${vendidos} / ${totalNumeros}</span> vendidos`;
 
             } catch (error) {
                 console.error("Erro ao buscar dados:", error.message);
-                painel.innerHTML = `<p style="color:red;">Erro ao carregar a rifa. Verifique o console.</p>`;
+                painel.innerHTML = `<p style="color:red; text-align:center;"><b>Erro ao carregar a rifa.</b><br>Verifique se as chaves SUPABASE_URL e SUPABASE_KEY estão corretas no index.html.</p>`;
             }
         }
 
@@ -162,7 +173,6 @@
                 // Abre o WhatsApp em uma nova aba
                 window.open(linkWhatsapp, '_blank');
                 
-                // Opcional: Marcar como "pendente" visualmente (mas o admin que confirma)
                 alert("Você será redirecionado ao WhatsApp para confirmar sua reserva! Seu número só será garantido após a confirmação do PIX.");
             }
         }
